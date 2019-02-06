@@ -10,10 +10,13 @@
 
 @interface ViewController ()<UITableViewDataSource,UITableViewDelegate>{
     NSMutableArray *dataArray;
+    NSMutableArray *dataContainer;
+    NSTimer *timer;
 }
 @property (weak, nonatomic) IBOutlet UITableView *table;
 @property (weak, nonatomic) IBOutlet UITextField *textField;
 @property (strong, nonatomic) AVSpeechSynthesizer *synthesizer;
+@property NSMutableArray *dataContainer;
 
 
 @end
@@ -83,34 +86,72 @@
     
 }
 
+// test on method using timer
+- (void) displayRead{
+    if (dataContainer.count) {
+        NSString *text = dataContainer[0];
+        [dataContainer removeObjectAtIndex:0];
+        [dataArray addObject:text];
+        [_table reloadData];
+        AVSpeechUtterance *utterance =[[AVSpeechUtterance alloc] initWithString:text];
+        [self.synthesizer speakUtterance:utterance];
+    }
+    else {
+        [timer invalidate];
+        timer = nil;
+    }
+}
+
+- (void) displayRead2{
+    if (dataContainer.count) {
+        NSString *text = dataContainer[0];
+        [dataContainer removeObjectAtIndex:0];
+        [dataArray addObject:text];
+        [_table reloadData];
+        AVSpeechUtterance *utterance =[[AVSpeechUtterance alloc] initWithString:text];
+        [self.synthesizer speakUtterance:utterance];
+        [timer invalidate];
+        timer = nil;
+    }
+}
 // Testing synthesizer and reloadData
 // Expected: Display and speak messages stored an Array one by one
 // Currenly behavior: display and speek all messages togethers
+// Using timer to read and display one by one
 - (IBAction)oneByOneTapped:(id)sender {
-    NSMutableArray *dataContainer = [NSMutableArray arrayWithArray:dataArray];
+    dataContainer = [NSMutableArray arrayWithArray:dataArray];
     dataArray = [[NSMutableArray alloc] init];
-    for(NSString* oneRow in dataContainer ){
-        NSString *text = oneRow;
-        [dataArray addObject:text];
-        [self.table reloadData];
-        // [NSThread sleepForTimeInterval:1.0f];
-        
-        // dispatch_async(dispatch_get_main_queue(), ^(void) {
-        //    [self.table reloadData];
-        // });
-        
-        // [self.table layoutIfNeeded];
-        
-        // dispatch_async(dispatch_get_main_queue(), ^{
-        //     AVSpeechUtterance *utterance =[[AVSpeechUtterance alloc] initWithString:text];
-        //     [self.synthesizer speakUtterance:utterance];
-        // });
-        
-        AVSpeechUtterance *utterance =[[AVSpeechUtterance alloc] initWithString:text];
-        [self.synthesizer speakUtterance:utterance];
-        
-    }
+    [_table reloadData];
+    
+//    while (dataContainer.count) {
+//        timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(displayRead2) userInfo:nil repeats:NO];
+//    }
+    timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(displayRead) userInfo:nil repeats:YES];
 }
+    
+    
+//    for(NSString* oneRow in dataContainer ){
+//        NSString *text = oneRow;
+//        [dataArray addObject:text];
+//        [self.table reloadData];
+//        // [NSThread sleepForTimeInterval:1.0f];
+//
+//        // dispatch_async(dispatch_get_main_queue(), ^(void) {
+//        //    [self.table reloadData];
+//        // });
+//
+//        // [self.table layoutIfNeeded];
+//
+//        // dispatch_async(dispatch_get_main_queue(), ^{
+//        //     AVSpeechUtterance *utterance =[[AVSpeechUtterance alloc] initWithString:text];
+//        //     [self.synthesizer speakUtterance:utterance];
+//        // });
+//
+//        AVSpeechUtterance *utterance =[[AVSpeechUtterance alloc] initWithString:text];
+//        [self.synthesizer speakUtterance:utterance];
+//
+//    }
+
 
 
 @end
