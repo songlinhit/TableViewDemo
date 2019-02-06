@@ -25,18 +25,19 @@
     // Do any additional setup after loading the view, typically from a nib.
     [self arraySetup];
     
-    // init synthesizer
+    // init and test synthesizer
     self.synthesizer = [[AVSpeechSynthesizer alloc] init];
     
     AVSpeechUtterance *utterance =[[AVSpeechUtterance alloc] initWithString:@"Hello"];
     [self.synthesizer speakUtterance:utterance];
 }
 
+// creat an Array to store the content of tableView
 -(void)arraySetup{
     dataArray = [NSMutableArray arrayWithArray:@[@"Hello,", @"My name is Janus.", @"I see you have two un-configured devices.", @"Do you want to configure them now?" ]];
 }
 
-#pragma mark - UITableView DataSource Method
+// UITableView DataSource Methods
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     return dataArray.count;
 }
@@ -51,6 +52,7 @@
     return cell;
 }
 
+// TableView Editing method
 -(void) tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
     if (editingStyle == UITableViewCellEditingStyleDelete){
         [dataArray removeObjectAtIndex:indexPath.row];
@@ -59,15 +61,18 @@
     }
 }
 
+// test reloadData method to refresh tableView
 - (IBAction)refesh:(id)sender {
     [_table reloadData];
 }
 
+// another test of reload method to refresh tableView
 - (IBAction)removeTapped:(id)sender {
     [dataArray removeObjectAtIndex:0];
     [self.table reloadData];
 }
 
+// Joint test of reload and tableView of single text input from a text field
 - (IBAction)sendTapped:(id)sender {
     NSString *text = self.textField.text;
     [dataArray addObject:text];
@@ -78,6 +83,9 @@
     
 }
 
+// Testing synthesizer and reloadData
+// Expected: Display and speak messages stored an Array one by one
+// Currenly behavior: display and speek all messages togethers
 - (IBAction)oneByOneTapped:(id)sender {
     NSMutableArray *dataContainer = [NSMutableArray arrayWithArray:dataArray];
     dataArray = [[NSMutableArray alloc] init];
